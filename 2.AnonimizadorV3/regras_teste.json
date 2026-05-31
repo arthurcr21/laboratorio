@@ -1,0 +1,22 @@
+{
+  "A": {
+    "textMethod": "fake_name",
+    "numberMethod": "none"
+  },
+  "B": {
+    "textMethod": "fake_cpf",
+    "numberMethod": "fake_cpf"
+  },
+  "C": {
+    "textMethod": "fake_email",
+    "numberMethod": "none"
+  },
+  "D": {
+    "textMethod": "generalize_age",
+    "numberMethod": "generalize_age"
+  },
+  "E": {
+    "textMethod": "none",
+    "numberMethod": "perturb_number"
+  }
+}

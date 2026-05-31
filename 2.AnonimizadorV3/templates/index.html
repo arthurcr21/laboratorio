@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRASILCAP - Anonimizador de Planilhas</title>
+    <!-- Fonte Inter do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================
+           1. VARIÁVEIS E ESTILOS GLOBAIS
+           ========================================== */
+        :root {
+            --color-primary: #007fff;      /* Azul celeste */
+            --color-primary-dark: #005fcc;
+            --color-accent-gold: #ffd700;   /* Ouro */
+            --color-accent-amber: #d97706;
+            --color-accent-cyan: #007fff;
+            --color-accent-green: #00875a;
+            --color-danger: #de350b;
+            --color-danger-bg: #fee2e2;
+            --color-bg: #f8fafc;
+            --border-color: #d5d5d5;        /* Prata */
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --color-header-text: #002266;   /* Azul escuro para contraste no cabeçalho */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding-bottom: 0;
+        }
+
+        /* ==========================================
+           2. CABEÇALHO CORPORATIVO
+           ========================================== */
+        .app-header-wrapper {
+            background-color: var(--color-accent-gold); /* Ouro #ffd700 */
+            padding: 1rem 2rem;
+            color: var(--color-header-text);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 12px;
+            margin: 1.5rem auto;
+            max-width: 1400px;
+            border: none;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-brand-title {
+            font-size: 1.7rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: var(--color-header-text);
+        }
+
+        .header-brand-subtitle {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--color-header-text);
+            letter-spacing: 0.02em;
+            line-height: 1.1;
+        }
+
+        .badge-lgpd {
+            background-color: #0038a8;
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 6px rgba(0, 56, 168, 0.15);
+            border: none;
+        }
+
+        /* ==========================================
+           3. CONTAINERS PRINCIPAIS e LAYOUT
+           ========================================== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Painel Glassmorphism */
+        .glass-panel {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Grid da Área de Trabalho */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==========================================
+           4. CARD DE INTRODUÇÃO E FILE DROPZONE
+           ========================================== */
+        .hero-section {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-left: 6px solid var(--color-primary);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .hero-title {
+            color: var(--color-primary);
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            max-width: 850px;
+            margin: 0 auto;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* File Dropzone area */
+        .dropzone {
+            border: 2px dashed var(--color-primary);
+            border-radius: 12px;
+            padding: 3.5rem 2rem;
+            text-align: center;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dropzone:hover, .dropzone.drag-active {
+            border-color: var(--color-primary-dark);
+            background-color: rgba(0, 56, 168, 0.01);
+            box-shadow: 0 8px 16px rgba(0, 56, 168, 0.04);
+        }
+
+        .dropzone-icon-wrapper {
+            background-color: #f0f5ff;
+            border-radius: 10px;
+            padding: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: var(--color-primary);
+            width: 48px;
+            height: 48px;
+        }
+
+        .dropzone-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .dropzone-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .dropzone-formats {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Features Highlights */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .feature-card-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ==========================================
+           5. INFOBAR DO ARQUIVO CARREGADO
+           ========================================== */
+        .file-info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .file-info-details {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .file-icon {
+            font-size: 1.8rem;
+        }
+
+        .file-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: block;
+        }
+
+        .file-size {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .sheet-selector-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8fafc;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        .sheet-selector-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .sheet-select {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            font-weight: 500;
+            background-color: white;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* ==========================================
+           6. CONTROLES E BOTÕES
+           ========================================== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            outline: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 56, 168, 0.15);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--color-primary-dark);
+            box-shadow: 0 4px 8px rgba(0, 56, 168, 0.25);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+
+        .btn-danger {
+            background-color: var(--color-danger-bg);
+            color: var(--color-danger);
+            border: 1px solid rgba(222, 53, 11, 0.15);
+        }
+
+        .btn-danger:hover {
+            background-color: #fecaca;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .col-select {
+            width: 100%;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            background-color: white;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* ==========================================
+           7. TABELA DE VISUALIZAÇÃO E BADGES
+           ========================================== */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 1rem;
+            max-height: 500px;
+        }
+
+        table.preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            color: #2d3748;
+        }
+
+        table.preview-table th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #f8fafc;
+            color: #4a5568;
+            font-weight: 700;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            border-right: 1px solid #edf2f7;
+            min-width: 200px;
+        }
+
+        /* Primeira coluna (Ativar) fixada na lateral esquerda */
+        table.preview-table th:first-child,
+        table.preview-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 11;
+            background-color: #f8fafc;
+            border-right: 2px solid #cbd5e1 !important;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        table.preview-table th:first-child {
+            z-index: 12;
+        }
+
+        table.preview-table tr:hover:not(.inactive) td:first-child {
+            background-color: rgba(0, 127, 255, 0.12) !important;
+        }
+
+        table.preview-table td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #edf2f7;
+            border-right: 1px solid #edf2f7;
+            white-space: nowrap;
+        }
+
+        table.preview-table tr.inactive {
+            opacity: 0.45;
+            background-color: #f8fafc;
+        }
+
+        table.preview-table tr:hover:not(.inactive) {
+            background-color: rgba(0, 127, 255, 0.04);
+        }
+
+        .cell-anonymized {
+            color: var(--color-primary) !important;
+            background-color: rgba(0, 127, 255, 0.08) !important;
+            font-weight: 500;
+        }
+
+        .cell-removed {
+            text-decoration: line-through;
+            opacity: 0.5;
+            color: var(--color-danger) !important;
+            font-family: monospace;
+        }
+
+        .badge-action {
+            display: inline-block;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin: 0.1rem;
+        }
+        .badge-none { background-color: #e2e8f0; color: #4a5568; }
+        .badge-mascarar { background-color: #ffe8cc; color: #d97706; }
+        .badge-ficticio { background-color: #d1fae5; color: #065f46; }
+        .badge-outros { background-color: #e0f2fe; color: #0369a1; }
+        .badge-remove { background-color: #fee2e2; color: #991b1b; }
+
+        /* ==========================================
+           8. PAINEL DE CONFIGURAÇÕES INDIVIDUAIS
+           ========================================== */
+        .config-list-container {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem;
+            background: #f8fafc;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid #edf2f7;
+            margin-bottom: 0.5rem;
+            transition: opacity 0.2s ease;
+        }
+
+        .config-item.inactive {
+            opacity: 0.45;
+        }
+
+        .config-item.configured {
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .config-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .config-item-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .config-item-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .config-select-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+            display: block;
+        }
+
+        /* ==========================================
+           9. SUCESSO, SPINNER E ACESSORIOS
+           ========================================== */
+        .success-card {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 135, 90, 0.03);
+        }
+
+        .success-title {
+            color: #15803d;
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-desc {
+            color: #166534;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .spinner-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 0;
+        }
+
+        .spinner {
+            border: 3px solid rgba(0, 56, 168, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--color-primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* ==========================================
+           11. RODAPÉ (FOOTER)
+           ========================================== */
+        .app-footer {
+            background-color: #121214; /* Cor escura do protótipo */
+            color: #94a3b8;
+            padding: 2.5rem 1.5rem;
+            margin-top: 4rem;
+            border-top: 1px solid #27272a;
+            font-size: 0.8rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-brand-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .footer-title {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-subtitle {
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .footer-text {
+            text-align: right;
+            line-height: 1.6;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .footer-text {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho Institucional -->
+    <div class="app-header-wrapper">
+        <div class="header-brand">
+            <span class="header-brand-title">BRASILCAP</span>
+            <div style="border-left: 2px solid rgba(0, 34, 102, 0.25); height: 35px; margin: 0 1rem;"></div>
+            <div style="display: flex; flex-direction: column;">
+                <span class="header-brand-subtitle">ANONIMIZADOR DE PLANILHAS</span>
+                <span style="color: var(--text-secondary); font-size: 0.75rem; font-weight: 600; margin-top: 2px;">Segurança da Informação | LGPD</span>
+            </div>
+        </div>
+        <div class="badge-lgpd">
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="fill: currentColor;">
+                <path d="M7 0L0 3V8C0 12.1 2.9 15.6 7 16C11.1 15.6 14 12.1 14 8V3L7 0Z" />
+            </svg>
+            Processamento 100% Local (Navegador)
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- TELA INICIAL (UPLOAD) -->
+        <div id="initial-screen">
+            <div class="hero-section">
+                <h2 class="hero-title">Anonimizador de Planilhas</h2>
+                <p class="hero-subtitle">
+                    Proteja dados pessoais sensíveis de clientes e colaboradores de forma simples e segura. As planilhas são processadas localmente na memória do seu navegador web — nenhum dado sai do seu computador.
+                </p>
+            </div>
+
+            <!-- Dropzone -->
+            <div class="dropzone" id="dropzone">
+                <input type="file" id="file-input" style="display: none;" accept=".xlsx, .xls, .csv, .ods">
+                <div class="dropzone-icon-wrapper">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                </div>
+                <h3 class="dropzone-title">Arraste e solte sua planilha aqui</h3>
+                <p class="dropzone-subtitle">ou clique para navegar nos seus arquivos</p>
+                <div class="dropzone-formats">
+                    Suporta formatos: .xlsx, .xls, .csv, .ods
+                </div>
+            </div>
+
+            <!-- Destaques -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">🔒</div>
+                    <h4 class="feature-card-title">Segurança Absoluta</h4>
+                    <p class="feature-card-desc">Conforme com as regras internas e LGPD. Sem chamadas externas de dados de planilhas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">✨</div>
+                    <h4 class="feature-card-title">Regras por Tipo de Dado</h4>
+                    <p class="feature-card-desc">Escolha regras diferentes de mascaramento para colunas de texto e perturbação para colunas numéricas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">💾</div>
+                    <h4 class="feature-card-title">Preserva Fórmulas</h4>
+                    <p class="feature-card-desc">Estruturas, cores, formatações e fórmulas de planilhas Excel (.xlsx) permanecem intactas.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA PRINCIPAL (DASHBOARD WORKSPACE) -->
+        <div id="workspace-screen" style="display: none;">
+            <!-- InfoBar do arquivo carregado -->
+            <div class="file-info-bar">
+                <div class="file-info-details">
+                    <span class="file-icon">📊</span>
+                    <div>
+                        <span class="file-name" id="display-file-name">planilha.xlsx</span>
+                        <span class="file-size" id="display-file-size">1.2 MB — 100 registros</span>
+                    </div>
+                </div>
+
+                <div class="sheet-selector-wrapper" id="sheet-selector-container" style="display: none;">
+                    <span class="sheet-selector-label">Aba ativa:</span>
+                    <select class="sheet-select" id="sheet-select"></select>
+                </div>
+
+                <button class="btn btn-danger" id="btn-remove-file">
+                    ❌ Remover Planilha
+                </button>
+            </div>
+
+            <!-- Grid de Trabalho -->
+            <div class="dashboard-grid">
+                <!-- Coluna Esquerda: Visualização -->
+                <div class="glass-panel" style="overflow: hidden;">
+                    <div class="panel-title">
+                        👁️ Visualização & Seleção Individual
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                        As células alteradas aparecem em azul. Desmarque a linha/coluna para ignorar sua anonimização.
+                    </div>
+
+                    <div class="table-container">
+                        <table class="preview-table" id="preview-table">
+                            <thead>
+                                <!-- Preenchido via JS -->
+                            </thead>
+                            <tbody>
+                                <!-- Preenchido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-align: right; margin-top: 0.5rem;" id="table-footer-note">
+                        Exibindo as primeiras linhas para visualização prévia.
+                    </div>
+
+                    <!-- Configurações adicionais de exclusão de linhas -->
+                    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                        <details style="font-size: 0.8rem; cursor: pointer; color: var(--text-secondary);">
+                            <summary style="font-weight: 700; color: var(--color-primary); outline: none;">Configuração Avançada de Linhas (Filtros Individuais)</summary>
+                            <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; cursor: default;">
+                                <div>
+                                    <label style="font-weight: 600; display: block; margin-bottom: 0.25rem;">Excluir explicitamente (linha não será modificada):</label>
+                                    <input type="text" id="exclude-rows-input" placeholder="Ex: 5, 8, 12-15" class="col-select" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label style="font-weight: 600; display: block; margin-bottom: 0.25rem;">Incluir explicitamente (linha será forçada a anonimizar):</label>
+                                    <input type="text" id="include-rows-input" placeholder="Ex: 1, 3" class="col-select" style="width: 100%;">
+                                </div>
+                                <button class="btn btn-secondary" id="btn-apply-row-filters" style="align-self: flex-end; margin-top: 0.25rem;">Aplicar Filtros</button>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Sidebar Configs -->
+                <div class="glass-panel">
+                    <div class="panel-title">
+                        ⚙️ Configurações
+                    </div>
+
+                    <!-- Stats banner -->
+                    <div style="background: rgba(0, 56, 168, 0.05); border: 1px solid rgba(0, 56, 168, 0.15); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem;">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600;">Colunas Configuradas</div>
+                        <div style="font-size: 1.25rem; font-weight: 800; color: var(--color-primary);" id="configured-cols-stat">
+                            0 / 0 colunas
+                        </div>
+                    </div>
+
+                    <!-- Intervalo de Linhas -->
+                    <div style="margin-bottom: 1.25rem;">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; display: block;">Intervalo de Linhas (Filtro)</span>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; background: #f8fafc; padding: 0.5rem; border: 1px solid #edf2f7; border-radius: 6px;">
+                            <div>
+                                <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600;">Linha Inicial:</span>
+                                <input type="number" id="start-row-input" min="1" value="2" class="col-select" style="text-align: center;">
+                            </div>
+                            <div>
+                                <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600;">Linha Final:</span>
+                                <input type="number" id="end-row-input" min="1" class="col-select" style="text-align: center;">
+                            </div>
+                        </div>
+                        <span style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.25rem; display: block; line-height: 1.3;">
+                            Por padrão, a linha 1 (cabeçalho) é preservada, iniciando na linha 2.
+                        </span>
+                    </div>
+
+                    <!-- Ações em Lote -->
+                    <div style="margin-bottom: 1.25rem;">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; display: block;">Ações Rápidas em Lote</span>
+                        <button class="btn btn-secondary btn-full" id="btn-autodetect" style="margin-bottom: 0.5rem; justify-content: flex-start;">
+                            ✨ Autodetectar Regras Inteligentes
+                        </button>
+                        <div style="display: flex; gap: 0.4rem;">
+                            <select class="col-select" id="batch-rule-select">
+                                <option value="" disabled selected>Aplicar regra geral a tudo...</option>
+                                <!-- Preenchido via JS -->
+                            </select>
+                            <button class="btn btn-danger" id="btn-reset-rules" title="Limpar todas as regras">
+                                🔄
+                            </button>
+                        </div>
+                    </div>
+
+                    <hr style="margin: 1.25rem 0; border: none; border-top: 1px solid #edf2f7;">
+
+                    <!-- Lista Acordeão de Colunas -->
+                    <div style="margin-bottom: 1.25rem;">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; display: block;">Configuração por Coluna</span>
+                        <div class="config-list-container" id="config-list-container">
+                            <!-- Preenchido via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Botão de Ação Principal e Progresso -->
+                    <div id="execution-container">
+                        <button class="btn btn-primary btn-full" id="btn-process-file" style="padding: 0.75rem 1rem; font-size: 0.95rem;">
+                            🚀 Anonimizar Planilha
+                        </button>
+                    </div>
+
+                    <div id="progress-container" class="spinner-wrapper" style="display: none;">
+                        <div class="spinner"></div>
+                        <span class="progress-text">Processando dados locais...</span>
+                    </div>
+
+                    <div id="success-container" class="success-card" style="display: none;">
+                        <div class="success-title">🛡️ Processamento Concluído!</div>
+                        <p class="success-desc">
+                            A aba selecionada foi processada localmente com as regras indicadas, mantendo estilos e fórmulas.
+                        </p>
+                        <button class="btn btn-primary btn-full" id="btn-download-file" style="background-color: var(--color-accent-green);">
+                            💾 Baixar Planilha Anonimizada
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé Corporativo -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-brand-info">
+                <span class="footer-title">BRASILCAP</span>
+                <span class="footer-subtitle">Segurança da Informação | LGPD</span>
+            </div>
+            <div class="footer-text">
+                Ferramenta local de descaracterização de dados em conformidade com as diretrizes da LGPD.<br>
+                © 2026 Brasilcap. Todos os direitos reservados. Processamento local síncrono offline.
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+       10. LOGICA E COMPORTAMENTO JAVASCRIPT
+       ========================================== -->
+    <script>
+        // Métodos de Anonimização (IDÊNTICO ao dicionário Python/TS)
+        const ANONYMIZE_METHODS = {
+            'none': 'Manter Original',
+            'mask_text': 'Mascarar Texto (Ex: Jo***va)',
+            'mask_email': 'Mascarar E-mail (Ex: j***@e***.com)',
+            'mask_phone': 'Mascarar Telefone (Ex: (11) *****-****)',
+            'mask_cpf': 'Mascarar CPF (Ex: ***.456.789-**)',
+            'fake_name': 'Nome Fictício Aleatório',
+            'fake_cpf': 'CPF Fictício Válido',
+            'fake_phone': 'Telefone Fictício Válido',
+            'fake_email': 'E-mail Fictício Aleatório',
+            'hash_sha256': 'Hash Criptográfico (SHA-256)',
+            'generalize_age': 'Faixa Etária (Ex: 30-39)',
+            'perturb_number': 'Perturbar Valor (+/- 10%)',
+            'remove': 'Remover Coluna'
+        };
+
+        // Estado Global da Interface
+        let state = {
+            file: null,
+            sheetNames: [],
+            currentSheet: "",
+            headers: [],
+            previewRows: [],
+            totalRows: 0,
+            columnConfigs: {}, // col_letter -> { textMethod, numberMethod }
+            startRow: 2,
+            endRow: 1,
+            excludedRows: new Set(),
+            includedRows: new Set(),
+            excludedColumns: new Set(),
+            processedBlob: null,
+            processedFileName: null
+        };
+
+        // Elementos do DOM
+        const el = {
+            initialScreen: document.getElementById('initial-screen'),
+            workspaceScreen: document.getElementById('workspace-screen'),
+            dropzone: document.getElementById('dropzone'),
+            fileInput: document.getElementById('file-input'),
+            displayFileName: document.getElementById('display-file-name'),
+            displayFileSize: document.getElementById('display-file-size'),
+            sheetSelect: document.getElementById('sheet-select'),
+            sheetSelectorContainer: document.getElementById('sheet-selector-container'),
+            btnRemoveFile: document.getElementById('btn-remove-file'),
+            previewTable: document.getElementById('preview-table'),
+            tableFooterNote: document.getElementById('table-footer-note'),
+            configuredColsStat: document.getElementById('configured-cols-stat'),
+            startRowInput: document.getElementById('start-row-input'),
+            endRowInput: document.getElementById('end-row-input'),
+            btnAutodetect: document.getElementById('btn-autodetect'),
+            batchRuleSelect: document.getElementById('batch-rule-select'),
+            btnResetRules: document.getElementById('btn-reset-rules'),
+            configListContainer: document.getElementById('config-list-container'),
+            btnProcessFile: document.getElementById('btn-process-file'),
+            progressContainer: document.getElementById('progress-container'),
+            successContainer: document.getElementById('success-container'),
+            btnDownloadFile: document.getElementById('btn-download-file'),
+            excludeRowsInput: document.getElementById('exclude-rows-input'),
+            includeRowsInput: document.getElementById('include-rows-input'),
+            btnApplyRowFilters: document.getElementById('btn-apply-row-filters')
+        };
+
+        // ==========================================
+        // ALGORITMOS DE SEED E MASCARAMENTO CLIENT-SIDE
+        // ==========================================
+        // Executa visualização instantânea na tela, sem depender do backend.
+
+        function getSeed(str) {
+            if (!str) return 0;
+            let hash = 5381;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) + hash) + str.charCodeAt(i);
+            }
+            return Math.abs((hash + 2**31) % 2**32 - 2**31);
+        }
+
+        function isNumeric(value) {
+            if (value === undefined || value === null || value === '') return false;
+            if (typeof value === 'number') return true;
+            const str = String(value).trim();
+            if (str === '') return false;
+            return !isNaN(Number(str)) && !isNaN(parseFloat(str));
+        }
+
+        const firstNames = [
+            'Alexandre', 'Ana', 'André', 'Antônio', 'Beatriz', 'Bruno', 'Camila', 'Carlos', 
+            'Carolina', 'Daniel', 'Diego', 'Eduardo', 'Eliane', 'Felipe', 'Fernanda', 'Fernando', 
+            'Gabriel', 'Gabriela', 'Guilherme', 'Gustavo', 'Helena', 'Isabela', 'João', 'Juliana', 
+            'Julio', 'Larissa', 'Leonardo', 'Lucas', 'Luana', 'Luiz', 'Manuela', 'Marcelo', 
+            'Marcos', 'Maria', 'Mariana', 'Mateus', 'Maurício', 'Natália', 'Patricia', 'Pedro', 
+            'Rafael', 'Rafaela', 'Ricardo', 'Rodrigo', 'Sandra', 'Thiago', 'Valéria', 'Victor', 
+            'Vinícius', 'Yasmin'
+        ];
+
+        const lastNames = [
+            'Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Ferreira', 'Alves', 'Pereira', 
+            'Lima', 'Gomes', 'Costa', 'Ribeiro', 'Martins', 'Carvalho', 'Almeida', 'Lopes', 
+            'Soares', 'Dias', 'Vieira', 'Barbosa', 'Rocha', 'Cardoso', 'Araújo', 'Nascimento', 
+            'Cavalcante', 'Melo', 'Moreira', 'Teixeira', 'Mendes', 'Borges', 'Freitas', 'Pinto', 
+            'Fonseca', 'Barros'
+        ];
+
+        function generateCPF(seedNum) {
+            const cpfDigits = [];
+            let tempSeed = seedNum;
+            for (let i = 0; i < 9; i++) {
+                cpfDigits.push(tempSeed % 10);
+                tempSeed = Math.floor(tempSeed / 10);
+                if (tempSeed === 0) tempSeed = seedNum + i + 7;
+            }
+            let sum = 0;
+            for (let i = 0; i < 9; i++) sum += cpfDigits[i] * (10 - i);
+            let d1 = 11 - (sum % 11);
+            if (d1 >= 10) d1 = 0;
+            cpfDigits.push(d1);
+            sum = 0;
+            for (let i = 0; i < 10; i++) sum += cpfDigits[i] * (11 - i);
+            let d2 = 11 - (sum % 11);
+            if (d2 >= 10) d2 = 0;
+            cpfDigits.push(d2);
+            const digits = cpfDigits.join('');
+            return `${digits.substring(0, 3)}.${digits.substring(3, 6)}.${digits.substring(6, 9)}-${digits.substring(9, 11)}`;
+        }
+
+        function generatePhone(seedNum) {
+            const dddList = [11, 19, 21, 31, 41, 51, 61, 71, 81, 85, 91];
+            const ddd = dddList[seedNum % dddList.length];
+            let temp = seedNum;
+            let digits = '';
+            for (let i = 0; i < 8; i++) {
+                digits += (temp % 10).toString();
+                temp = Math.floor(temp / 10);
+                if (temp === 0) temp = seedNum + i + 17;
+            }
+            return `(${ddd}) 9${digits.substring(0, 4)}-${digits.substring(4, 8)}`;
+        }
+
+        function generateFullName(seedNum) {
+            const first = firstNames[seedNum % firstNames.length];
+            const last1 = lastNames[(seedNum + 3) % lastNames.length];
+            const last2 = lastNames[(seedNum + 7) % lastNames.length];
+            return `${first} ${last1} ${last2}`;
+        }
+
+        function generateEmail(seedNum, fakeName) {
+            const cleanName = fakeName
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/\s+/g, '.');
+            const domains = ['exemplo.com.br', 'empresa.com.br', 'teste.com.br', 'provedor.com.br', 'anonimo.com.br'];
+            const domain = domains[seedNum % domains.length];
+            return `${cleanName}@${domain}`;
+        }
+
+        function maskEmail(email) {
+            const parts = email.split('@');
+            if (parts.length !== 2) return maskText(email);
+            const [local, domain] = parts;
+            let maskedLocal = '';
+            if (local.length > 2) {
+                maskedLocal = local[0] + '*'.repeat(local.length - 2) + local[local.length - 1];
+            } else {
+                maskedLocal = '*'.repeat(local.length);
+            }
+            const domainParts = domain.split('.');
+            const maskedDomain = domainParts.map((part, idx) => {
+                if (idx === domainParts.length - 1) return part;
+                if (part.length > 2) return part[0] + '*'.repeat(part.length - 2) + part[part.length - 1];
+                return '*'.repeat(part.length);
+            }).join('.');
+            return `${maskedLocal}@${maskedDomain}`;
+        }
+
+        function maskPhone(phone) {
+            let count = 0;
+            return phone.split('').map((char) => {
+                if (/\d/.test(char)) {
+                    count++;
+                    if (count > 2) return '*';
+                }
+                return char;
+            }).join('');
+        }
+
+        function maskCPF(cpf) {
+            let count = 0;
+            return cpf.split('').map((char) => {
+                if (/\d/.test(char)) {
+                    count++;
+                    if (count <= 3 || count > 9) return '*';
+                }
+                return char;
+            }).join('');
+        }
+
+        function maskText(text) {
+            if (text.length <= 4) return '*'.repeat(text.length);
+            return text.substring(0, 2) + '*'.repeat(text.length - 4) + text.substring(text.length - 2);
+        }
+
+        function generalizeAge(value) {
+            const num = parseInt(value, 10);
+            if (isNaN(num)) return String(value);
+            if (num < 18) return 'Menor de 18';
+            if (num < 30) return '18-29';
+            if (num < 40) return '30-39';
+            if (num < 50) return '40-49';
+            if (num < 60) return '50-59';
+            return '60+';
+        }
+
+        function perturbNumber(value, seedNum) {
+            const num = parseFloat(value);
+            if (isNaN(num)) return value;
+            const percent = ((seedNum % 21) - 10) / 100;
+            const result = num * (1 + percent);
+            return Number(result.toFixed(2));
+        }
+
+        // Mock simplificado do sha256 síncrono para o preview instantâneo na UI
+        function fakeSha256(text) {
+            if (!text) return '';
+            let hash = 0;
+            for (let i = 0; i < text.length; i++) {
+                hash = (hash << 5) - hash + text.charCodeAt(i);
+                hash |= 0;
+            }
+            return 'sha256_' + Math.abs(hash).toString(16).padEnd(8, '0');
+        }
+
+        function anonymizeCellClient(value, method, seedString) {
+            if (value === undefined || value === null || value === '') return '';
+            const strVal = String(value).trim();
+            if (strVal === '') return '';
+            const seed = getSeed(seedString || strVal);
+
+            switch (method) {
+                case 'none': return value;
+                case 'mask_text': return maskText(strVal);
+                case 'mask_email': return maskEmail(strVal);
+                case 'mask_phone': return maskPhone(strVal);
+                case 'mask_cpf': return maskCPF(strVal);
+                case 'hash_sha256': return fakeSha256(strVal);
+                case 'fake_name': return generateFullName(seed);
+                case 'fake_cpf': return generateCPF(seed);
+                case 'fake_phone': return generatePhone(seed);
+                case 'fake_email': {
+                    const nameSeed = generateFullName(seed);
+                    return generateEmail(seed, nameSeed);
+                }
+                case 'generalize_age': return generalizeAge(value);
+                case 'perturb_number': return perturbNumber(value, seed);
+                case 'remove': return '';
+                default: return value;
+            }
+        }
+
+        // ==========================================
+        // MAPEAMENTO E RENDERIZAÇÃO DA INTERFACE
+        // ==========================================
+
+        // Preenche o seletor rápido em lote no HTML
+        function populateBatchSelect() {
+            el.batchRuleSelect.innerHTML = `<option value="" disabled selected>Aplicar regra geral a tudo...</option>`;
+            for (let k in ANONYMIZE_METHODS) {
+                el.batchRuleSelect.innerHTML += `<option value="${k}">${ANONYMIZE_METHODS[k]}</option>`;
+            }
+        }
+        populateBatchSelect();
+
+        // Eventos do seletor de aba ativa
+        el.sheetSelect.addEventListener('change', () => {
+            fetchPreview(state.file, el.sheetSelect.value);
+        });
+
+        // Eventos de Upload de arquivos
+        el.dropzone.addEventListener('click', () => el.fileInput.click());
+        el.fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFileSelected(e.target.files[0]);
+        });
+
+        el.dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            el.dropzone.classList.add('drag-active');
+        });
+
+        el.dropzone.addEventListener('dragleave', () => {
+            el.dropzone.classList.remove('drag-active');
+        });
+
+        el.dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            el.dropzone.classList.remove('drag-active');
+            if (e.dataTransfer.files.length > 0) handleFileSelected(e.dataTransfer.files[0]);
+        });
+
+        function handleFileSelected(selectedFile) {
+            state.file = selectedFile;
+            // Mostra informações do arquivo
+            el.displayFileName.textContent = selectedFile.name;
+            const sizeStr = selectedFile.size > 1024 * 1024
+                ? `${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB`
+                : `${(selectedFile.size / 1024).toFixed(1)} KB`;
+            el.displayFileSize.textContent = sizeStr;
+
+            // Envia o arquivo para rota de preview do Flask
+            fetchPreview(selectedFile);
+        }
+
+        // Faz requisição de preview ao Flask
+        function fetchPreview(file, sheetName = "") {
+            const formData = new FormData();
+            formData.append('file', file);
+            if (sheetName) formData.append('sheet', sheetName);
+
+            fetch('/api/preview', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                // Carrega estado retornado
+                state.sheetNames = data.sheetNames;
+                state.currentSheet = data.currentSheet;
+                state.headers = data.headers;
+                state.previewRows = data.previewRows;
+                state.totalRows = data.totalRows;
+
+                // Inicializa regras de colunas
+                state.columnConfigs = {};
+                state.headers.forEach(h => {
+                    state.columnConfigs[h] = { textMethod: 'none', numberMethod: 'none' };
+                });
+
+                state.startRow = 2;
+                state.endRow = data.totalRows;
+                state.excludedRows = new Set();
+                state.includedRows = new Set();
+                state.excludedColumns = new Set();
+                
+                state.processedBlob = null;
+                state.processedFileName = null;
+
+                // Atualiza campos numéricos
+                el.startRowInput.value = state.startRow;
+                el.startRowInput.max = state.totalRows;
+                el.endRowInput.value = state.endRow;
+                el.endRowInput.max = state.totalRows;
+
+                // Mostra/Oculta Seletor de Aba
+                if (state.sheetNames.length > 1) {
+                    el.sheetSelectorContainer.style.display = 'flex';
+                    el.sheetSelect.innerHTML = '';
+                    state.sheetNames.forEach(s => {
+                        const selected = s === state.currentSheet ? 'selected' : '';
+                        el.sheetSelect.innerHTML += `<option value="${s}" ${selected}>${s}</option>`;
+                    });
+                } else {
+                    el.sheetSelectorContainer.style.display = 'none';
+                }
+
+                // Troca telas
+                el.initialScreen.style.display = 'none';
+                el.workspaceScreen.style.display = 'block';
+
+                el.displayFileSize.textContent = `${el.displayFileSize.textContent.split(' — ')[0]} — ${state.totalRows.toLocaleString('pt-BR')} registros`;
+
+                // Renderiza os painéis na tela
+                renderColumnConfigList();
+                renderPreviewTable();
+                updateStats();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Erro ao ler dados da planilha no servidor local.");
+            });
+        }
+
+        // Atualiza estatísticas rápidas
+        function updateStats() {
+            const configured = Object.keys(state.columnConfigs).filter(h => {
+                const cfg = state.columnConfigs[h];
+                const active = !state.excludedColumns.has(h);
+                return active && (cfg.textMethod !== 'none' || cfg.numberMethod !== 'none');
+            }).length;
+
+            el.configuredColsStat.textContent = `${configured} / ${state.headers.length} colunas`;
+            el.btnProcessFile.disabled = (configured === 0);
+        }
+
+        // Renderiza a lista de opções de colunas na barra lateral
+        function renderColumnConfigList() {
+            el.configListContainer.innerHTML = '';
+            
+            state.headers.forEach(h => {
+                const config = state.columnConfigs[h];
+                const colActive = !state.excludedColumns.has(h);
+                const isConfigured = colActive && (config.textMethod !== 'none' || config.numberMethod !== 'none');
+                
+                // Obtém identificador do cabeçalho da linha 1 (se existir)
+                let colLabel = "";
+                const idx = state.headers.indexOf(h);
+                if (state.previewRows.length > 0 && idx < state.previewRows[0].length) {
+                    const val = state.previewRows[0][idx];
+                    if (val) colLabel = ` (${String(val).substring(0, 20)})`;
+                }
+
+                const configItem = document.createElement('div');
+                configItem.className = `config-item ${colActive ? '' : 'inactive'} ${isConfigured ? 'configured' : ''}`;
+                
+                // Opções dos Selects
+                let textOptionsHtml = '';
+                let numOptionsHtml = '';
+                for (let method in ANONYMIZE_METHODS) {
+                    textOptionsHtml += `<option value="${method}" ${config.textMethod === method ? 'selected' : ''}>${ANONYMIZE_METHODS[method]}</option>`;
+                    numOptionsHtml += `<option value="${method}" ${config.numberMethod === method ? 'selected' : ''}>${ANONYMIZE_METHODS[method]}</option>`;
+                }
+
+                configItem.innerHTML = `
+                    <div class="config-item-header">
+                        <span class="config-item-name" title="Coluna ${h}${colLabel}">Coluna ${h}${colLabel}</span>
+                        <label style="font-size: 0.65rem; font-weight: 700; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; gap: 0.2rem;">
+                            <input type="checkbox" class="col-active-checkbox" data-header="${h}" ${colActive ? 'checked' : ''}>
+                            Anonimizar
+                        </label>
+                    </div>
+                    <div class="config-item-grid" style="display: ${colActive ? 'grid' : 'none'};">
+                        <div>
+                            <span class="config-select-label">Se Texto (T)</span>
+                            <select class="col-select config-text-select" data-header="${h}">${textOptionsHtml}</select>
+                        </div>
+                        <div>
+                            <span class="config-select-label">Se Número (N)</span>
+                            <select class="col-select config-num-select" data-header="${h}">${numOptionsHtml}</select>
+                        </div>
+                    </div>
+                `;
+
+                // Evento checkbox da coluna
+                configItem.querySelector('.col-active-checkbox').addEventListener('change', (e) => {
+                    toggleColumnActive(h, e.target.checked);
+                });
+
+                // Eventos dropdowns
+                if (colActive) {
+                    configItem.querySelector('.config-text-select').addEventListener('change', (e) => {
+                        updateColumnRule(h, 'textMethod', e.target.value);
+                    });
+                    configItem.querySelector('.config-num-select').addEventListener('change', (e) => {
+                        updateColumnRule(h, 'numberMethod', e.target.value);
+                    });
+                }
+
+                el.configListContainer.appendChild(configItem);
+            });
+        }
+
+        // Renderiza a tabela de preview em HTML na tela
+        function renderPreviewTable() {
+            // 1. Renderiza os cabeçalhos
+            let theadHtml = `<tr><th style="width: 75px; text-align: center; vertical-align: middle;">Ativar</th>`;
+            state.headers.forEach(h => {
+                const config = state.columnConfigs[h];
+                const colActive = !state.excludedColumns.has(h);
+                
+                // Opções de dropdowns para o header
+                let textOptionsHtml = '';
+                let numOptionsHtml = '';
+                for (let method in ANONYMIZE_METHODS) {
+                    textOptionsHtml += `<option value="${method}" ${config.textMethod === method ? 'selected' : ''}>${ANONYMIZE_METHODS[method]}</option>`;
+                    numOptionsHtml += `<option value="${method}" ${config.numberMethod === method ? 'selected' : ''}>${ANONYMIZE_METHODS[method]}</option>`;
+                }
+
+                theadHtml += `
+                    <th>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                            <span style="font-size: 1rem; font-weight: 800; color: var(--color-primary);">Coluna ${h}</span>
+                            <label style="font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                                <input type="checkbox" class="header-col-active-checkbox" data-header="${h}" ${colActive ? 'checked' : ''}>
+                                Anonimizar
+                            </label>
+                        </div>
+                        <div class="header-config-selectors" style="display: ${colActive ? 'flex' : 'none'}; flex-direction: column; gap: 4px;">
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); width: 14px;">T:</span>
+                                <select class="col-select header-config-text-select" data-header="${h}" style="font-size: 0.75rem; padding: 2px 4px; height: auto; width: 100%;">
+                                    ${textOptionsHtml}
+                                </select>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); width: 14px;">N:</span>
+                                <select class="col-select header-config-num-select" data-header="${h}" style="font-size: 0.75rem; padding: 2px 4px; height: auto; width: 100%;">
+                                    ${numOptionsHtml}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="header-col-disabled-label" style="display: ${colActive ? 'none' : 'block'}; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-align: center; padding: 0.4rem 0;">
+                            DESATIVADA
+                        </div>
+                    </th>
+                `;
+            });
+            theadHtml += `</tr>`;
+            el.previewTable.querySelector('thead').innerHTML = theadHtml;
+
+            // 2. Renderiza as linhas
+            let tbodyHtml = '';
+            state.previewRows.forEach((row, rIdx) => {
+                const excelRowNum = rIdx + 1;
+                const inRange = (excelRowNum >= state.startRow && excelRowNum <= state.endRow);
+                const isRowActive = inRange ? !state.excludedRows.has(excelRowNum) : state.includedRows.has(excelRowNum);
+
+                tbodyHtml += `<tr class="${isRowActive ? '' : 'inactive'}">`;
+                
+                // Botão de toggle da linha
+                tbodyHtml += `
+                    <td style="text-align: center; font-weight: bold; background-color: #f8fafc; border-right: 2px solid #e2e8f0;">
+                        <span style="font-family: monospace; font-size: 0.85rem; margin-right: 0.25rem;">${excelRowNum}</span>
+                        <input type="checkbox" class="row-active-checkbox" data-row="${excelRowNum}" ${isRowActive ? 'checked' : ''} style="cursor:pointer;">
+                    </td>
+                `;
+
+                // Células da linha
+                state.headers.forEach((h, colIdx) => {
+                    const cellVal = row[colIdx] !== undefined ? row[colIdx] : '';
+                    const colActive = !state.excludedColumns.has(h);
+                    
+                    if (colActive && isRowActive && cellVal !== null && String(cellVal).trim() !== "" && !String(cellVal).startsWith('=')) {
+                        const isNum = isNumeric(cellVal);
+                        const config = state.columnConfigs[h];
+                        const method = isNum ? config.numberMethod : config.textMethod;
+
+                        if (method === 'remove') {
+                            tbodyHtml += `<td class="cell-removed">[REMOVIDO]</td>`;
+                        } else if (method !== 'none') {
+                            const seedStr = `${h}_row_${excelRowNum}_${cellVal}`;
+                            const anonVal = anonymizeCellClient(cellVal, method, seedStr);
+                            tbodyHtml += `<td class="cell-anonymized" title="Original: ${cellVal}">${anonVal}</td>`;
+                        } else {
+                            tbodyHtml += `<td>${cellVal}</td>`;
+                        }
+                    } else {
+                        tbodyHtml += `<td>${cellVal}</td>`;
+                    }
+                });
+
+                tbodyHtml += `</tr>`;
+            });
+            el.previewTable.querySelector('tbody').innerHTML = tbodyHtml;
+
+            // Adiciona listeners para os checkboxes de linhas
+            el.previewTable.querySelectorAll('.row-active-checkbox').forEach(chk => {
+                chk.addEventListener('change', (e) => {
+                    const rowNum = parseInt(e.target.dataset.row);
+                    toggleRowActive(rowNum, e.target.checked);
+                });
+            });
+
+            // Adiciona listeners para os checkboxes de colunas no header
+            el.previewTable.querySelectorAll('.header-col-active-checkbox').forEach(chk => {
+                chk.addEventListener('change', (e) => {
+                    const header = e.target.dataset.header;
+                    toggleColumnActive(header, e.target.checked);
+                });
+            });
+
+            // Adiciona listeners para os dropdowns de texto no header
+            el.previewTable.querySelectorAll('.header-config-text-select').forEach(sel => {
+                sel.addEventListener('change', (e) => {
+                    const header = e.target.dataset.header;
+                    updateColumnRule(header, 'textMethod', e.target.value);
+                });
+            });
+
+            // Adiciona listeners para os dropdowns numéricos no header
+            el.previewTable.querySelectorAll('.header-config-num-select').forEach(sel => {
+                sel.addEventListener('change', (e) => {
+                    const header = e.target.dataset.header;
+                    updateColumnRule(header, 'numberMethod', e.target.value);
+                });
+            });
+
+            el.tableFooterNote.textContent = `Exibindo as primeiras ${state.previewRows.length} linhas para visualização prévia das transformações.`;
+        }
+
+        // ==========================================
+        // GERENCIAMENTO DE ESTADO E FILTROS
+        // ==========================================
+
+        function toggleColumnActive(header, active) {
+            if (active) {
+                state.excludedColumns.delete(header);
+            } else {
+                state.excludedColumns.add(header);
+            }
+            renderColumnConfigList();
+            renderPreviewTable();
+            updateStats();
+            resetProcessedState();
+        }
+
+        function toggleRowActive(rowNum, active) {
+            const inRange = (rowNum >= state.startRow && rowNum <= state.endRow);
+            if (inRange) {
+                if (active) {
+                    state.excludedRows.delete(rowNum);
+                } else {
+                    state.excludedRows.add(rowNum);
+                }
+            } else {
+                if (active) {
+                    state.includedRows.add(rowNum);
+                } else {
+                    state.includedRows.delete(rowNum);
+                }
+            }
+            renderPreviewTable();
+            resetProcessedState();
+        }
+
+        function updateColumnRule(header, type, rule) {
+            state.columnConfigs[header][type] = rule;
+            renderColumnConfigList();
+            renderPreviewTable();
+            updateStats();
+            resetProcessedState();
+        }
+
+        // Listener inputs linhas
+        el.startRowInput.addEventListener('change', (e) => {
+            state.startRow = Math.max(1, Math.min(state.totalRows, parseInt(e.target.value) || 1));
+            renderPreviewTable();
+            resetProcessedState();
+        });
+
+        el.endRowInput.addEventListener('change', (e) => {
+            state.endRow = Math.max(1, Math.min(state.totalRows, parseInt(e.target.value) || state.totalRows));
+            renderPreviewTable();
+            resetProcessedState();
+        });
+
+        // Autodetect baseada na linha 1
+        el.btnAutodetect.addEventListener('click', () => {
+            state.headers.forEach((h, colIdx) => {
+                let label = '';
+                if (state.previewRows.length > 0 && colIdx < state.previewRows[0].length) {
+                    const val = state.previewRows[0][colIdx];
+                    if (val) label = String(val).toLowerCase();
+                }
+
+                let textMethod = 'none';
+                let numberMethod = 'none';
+
+                if (label.includes('cpf')) {
+                    textMethod = 'fake_cpf';
+                    numberMethod = 'fake_cpf';
+                } else if (label.includes('email') || label.includes('mail')) {
+                    textMethod = 'fake_email';
+                } else if (['tel', 'fone', 'cel', 'phone', 'contato'].some(x => label.includes(x))) {
+                    textMethod = 'fake_phone';
+                    numberMethod = 'fake_phone';
+                } else if (['nome', 'name', 'cliente', 'usuario', 'proprietario', 'colaborador'].some(x => label.includes(x))) {
+                    textMethod = 'fake_name';
+                } else if (label.includes('idade') || label.includes('age')) {
+                    textMethod = 'generalize_age';
+                    numberMethod = 'generalize_age';
+                } else if (['salario', 'valor', 'preco', 'price', 'custo', 'renda', 'receita'].some(x => label.includes(x))) {
+                    numberMethod = 'perturb_number';
+                }
+
+                state.columnConfigs[h] = { textMethod, numberMethod };
+            });
+
+            renderColumnConfigList();
+            renderPreviewTable();
+            updateStats();
+            resetProcessedState();
+        });
+
+        // Aplicar em Lote
+        el.batchRuleSelect.addEventListener('change', (e) => {
+            const rule = e.target.value;
+            if (!rule) return;
+            state.headers.forEach(h => {
+                state.columnConfigs[h] = { textMethod: rule, numberMethod: rule };
+            });
+            el.batchRuleSelect.value = ''; // Reseta selector
+            renderColumnConfigList();
+            renderPreviewTable();
+            updateStats();
+            resetProcessedState();
+        });
+
+        // Resetar Regras
+        el.btnResetRules.addEventListener('click', () => {
+            state.headers.forEach(h => {
+                state.columnConfigs[h] = { textMethod: 'none', numberMethod: 'none' };
+            });
+            state.excludedColumns.clear();
+            state.excludedRows.clear();
+            state.includedRows.clear();
+            
+            renderColumnConfigList();
+            renderPreviewTable();
+            updateStats();
+            resetProcessedState();
+        });
+
+        // Filtros avançados manuais de linhas
+        el.btnApplyRowFilters.addEventListener('click', () => {
+            parseRowRangeString(el.excludeRowsInput.value, state.excludedRows);
+            parseRowRangeString(el.includeRowsInput.value, state.includedRows);
+            renderPreviewTable();
+            resetProcessedState();
+        });
+
+        function parseRowRangeString(str, targetSet) {
+            targetSet.clear();
+            if (!str.trim()) return;
+            const parts = str.split(',');
+            parts.forEach(part => {
+                part = part.trim();
+                if (part.includes('-')) {
+                    const range = part.split('-');
+                    const start = parseInt(range[0]);
+                    const end = parseInt(range[1]);
+                    if (!isNaN(start) && !isNaN(end)) {
+                        for (let i = Math.min(start, end); i <= Math.max(start, end); i++) {
+                            targetSet.add(i);
+                        }
+                    }
+                } else {
+                    const val = parseInt(part);
+                    if (!isNaN(val)) targetSet.add(val);
+                }
+            });
+        }
+
+        function resetProcessedState() {
+            state.processedBlob = null;
+            state.processedFileName = null;
+            el.successContainer.style.display = 'none';
+            el.btnProcessFile.style.display = 'block';
+        }
+
+        // Remover arquivo e resetar tela
+        el.btnRemoveFile.addEventListener('click', () => {
+            state = {
+                file: null,
+                sheetNames: [],
+                currentSheet: "",
+                headers: [],
+                previewRows: [],
+                totalRows: 0,
+                columnConfigs: {},
+                startRow: 2,
+                endRow: 1,
+                excludedRows: new Set(),
+                includedRows: new Set(),
+                excludedColumns: new Set(),
+                processedBlob: null,
+                processedFileName: null
+            };
+            el.fileInput.value = '';
+            el.excludeRowsInput.value = '';
+            el.includeRowsInput.value = '';
+            el.initialScreen.style.display = 'block';
+            el.workspaceScreen.style.display = 'none';
+            resetProcessedState();
+        });
+
+        // ==========================================
+        // ENTRADA DE DADOS E PROCESSAMENTO (BACKEND)
+        // ==========================================
+
+        el.btnProcessFile.addEventListener('click', () => {
+            if (!state.file) return;
+
+            // Mostra tela de progresso
+            el.btnProcessFile.style.display = 'none';
+            el.progressContainer.style.display = 'flex';
+
+            const formData = new FormData();
+            formData.append('file', state.file);
+            formData.append('sheet', state.currentSheet);
+            formData.append('startRow', state.startRow);
+            formData.append('endRow', state.endRow);
+            formData.append('config', JSON.stringify(state.columnConfigs));
+            
+            // Converte sets para arrays em formato string JSON para o Flask ler
+            formData.append('excludedRows', JSON.stringify(Array.from(state.excludedRows)));
+            formData.append('includedRows', JSON.stringify(Array.from(state.includedRows)));
+            formData.append('excludedColumns', JSON.stringify(Array.from(state.excludedColumns)));
+
+            fetch('/api/anonymize', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(data => { throw new Error(data.error || "Erro no processamento"); });
+                }
+                
+                // Extrai nome de arquivo do cabeçalho Content-Disposition se existir
+                let filename = "planilha_anonimizada.xlsx";
+                const disposition = res.headers.get('content-disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    const matches = filenameRegex.exec(disposition);
+                    if (matches != null && matches[1]) { 
+                        filename = matches[1].replace(/['"]/g, '');
+                    }
+                }
+                state.processedFileName = filename;
+                return res.blob();
+            })
+            .then(blob => {
+                state.processedBlob = blob;
+                
+                // Oculta loading e mostra sucesso
+                el.progressContainer.style.display = 'none';
+                el.successContainer.style.display = 'block';
+            })
+            .catch(err => {
+                el.progressContainer.style.display = 'none';
+                el.btnProcessFile.style.display = 'block';
+                console.error(err);
+                alert("Erro ao processar: " + err.message);
+            });
+        });
+
+        // Download do arquivo binário recebido
+        el.btnDownloadFile.addEventListener('click', () => {
+            if (!state.processedBlob || !state.processedFileName) return;
+            
+            const url = window.URL.createObjectURL(state.processedBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = state.processedFileName;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        });
+
+    </script>
+</body>
+</html>
